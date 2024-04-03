@@ -131,7 +131,7 @@ class QrcodeController extends Controller
     }*/
 
 
- public function configserial(Request $request, $id) 
+    public function configserial(Request $request, $id)
     {
 
 
@@ -141,22 +141,19 @@ class QrcodeController extends Controller
         $data['listProductQrcode'] = $rs;
         return view('backend.qrcode.configserial', $data);
     }
-    
-    
-   public function editlot(Request $request, $id) 
+
+
+    public function editlot(Request $request, $id)
     {
         $rs = ProductQrcode::find($id);
-        if($rs) {
-            if($request->isMethod('post')) {
+        if ($rs) {
+            if ($request->isMethod('post')) {
                 /*validate data request*/
                 Validator::make($request->all(), [
                     'product_sku' => 'max:255',
-                    
-                ])->setAttributeNames([
-                    
-                    
-                ])->validate();
-               
+
+                ])->setAttributeNames([])->validate();
+
                 try {
                     \DB::beginTransaction();
                     $rs->product_sku = $request->product_sku;
@@ -170,29 +167,26 @@ class QrcodeController extends Controller
                     $rs->Reward_activecode = $request->Reward_activecode;
                     $rs->form_label = $request->form_label;
                     $rs->form_mesage = $request->form_mesage;
-                    
-                    
-                    
-                  
+
+
+
+
                     $rs->save();
                     \DB::commit();
                     \Session::flash('msg_warranty', "Cập nhật thành công");
-                    return redirect()->route('backend.qrcode.configserial',[$id]);
+                    return redirect()->route('backend.qrcode.configserial', [$id]);
                 } catch (Exception $e) {
                     \DB::rollBack();
                     return redirect()->route('backend.site.error');
                 }
             }
-          
-          
-          
         } else {
             return redirect()->route('backend.site.error');
         }
     }
-    
-    
-    
+
+
+
     public function checkStart(Request $request)
     {
         if ($request->has('type')) {
@@ -404,12 +398,11 @@ class QrcodeController extends Controller
 
     public function saveBlockProduct(Request $request)
     {
-        // dd($request->all());
         $data_insert = [];
         $list_old_id = [];
         try {
             if ($request->has('product')) {
-                foreach ($request->product as $key => $product) {
+                foreach ($request->product as $product) {
                     $id = $product['id'];
                     if ($product['start'] != '' && $product['end'] != '' && $product['amount'] != '') {
                         $insert_item = [];
@@ -423,21 +416,43 @@ class QrcodeController extends Controller
                         $insert_item['created_by'] = Auth::user()->id;
                         $insert_item['created_at'] = date('Y-m-d H:i:s');
                         $insert_item['updated_at'] = date('Y-m-d H:i:s');
-                        $data_insert[] = $insert_item;
+                        if (!empty($product['product_qrcode_id'])) {
+                            $data_insert[$product['product_qrcode_id']] = $insert_item;
+                        } else {
+                            $data_insert[$request->guid] = $insert_item;
+                        }
+
                         if (!empty($product['product_qrcode_id'])) {
                             $list_old_id[] =  $product['product_qrcode_id'];
                         }
                     }
                 }
             }
-            \DB::table('product_qrcode')
-                ->where('company_id', $request->company_id)
-                ->where('guid', $request->guid)
-                ->whereIn('id', $list_old_id)
-                ->delete();
-            if (count($data_insert) > 0) {
-                \DB::table('product_qrcode')->insert($data_insert);
+            
+            foreach ($data_insert as $key_data_insert => $value) {
+                if (is_int($key_data_insert)) {
+                    $product_qrcode = \DB::table('product_qrcode')
+                        ->where('id', $key_data_insert);
+                    if (count($product_qrcode->get()) > 0) {
+                        \DB::table('product_qrcode')
+                            ->where('id', $key_data_insert)->update($value);
+                    } else {
+                        \DB::table('product_qrcode')->insert([$value]);
+                    }
+                }else{
+                    \DB::table('product_qrcode')->insert([$value]);
+                }
             }
+
+
+            // \DB::table('product_qrcode')
+            //     ->where('company_id', $request->company_id)
+            //     ->where('guid', $request->guid)
+            //     ->whereIn('id', $list_old_id)
+            //     ->delete();
+            // if (count($data_insert) > 0) {
+            //     \DB::table('product_qrcode')->insert($data_insert);
+            // }
             return response()->json(['msg' => 'Lưu thành công!']);
         } catch (Exception $e) {
             return response()->json(['msg' => 'Có lỗi xảy ra!']);
@@ -684,8 +699,8 @@ class QrcodeController extends Controller
         //dd($data);
         return view('backend.qrcode.islockedit', $data);
     }
-    
-   
+
+
 
 
 
@@ -875,7 +890,7 @@ class QrcodeController extends Controller
                             $warranty[$key] = $value;
                         }
                         $warranty->save();
-                    }elseif ($request->type == 2) {
+                    } elseif ($request->type == 2) {
                         Warranty::where('guid', $data_return['attached_file']['guid'])->where('SP_sr', $i)->delete();
                     }
                 } else {

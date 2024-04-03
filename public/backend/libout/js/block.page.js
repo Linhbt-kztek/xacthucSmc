@@ -18,7 +18,7 @@ $(function () {
         success: function (response) {
           console.log(response.message);
         },
-        error: function (error) {},
+        error: function (error) { },
       });
     }
     $(_tr).remove();
@@ -317,7 +317,8 @@ function checkResidual(el, name_form, name_el) {
   if (start_number != "" && end_number != "") {
     if (start_number >= block_start && end_number <= block_end) {
       var check_false = false;
-      addblock_data.all_list_product.forEach((element) => {
+      for (const key in addblock_data.all_list_product) {
+        element = addblock_data.all_list_product[key];
         if (element.product_qrcode_id != product_qrcode_id) {
           if (!check_false) {
             if (
@@ -328,8 +329,13 @@ function checkResidual(el, name_form, name_el) {
               check_false = true;
             }
           }
+        } else {
+          if (!check_false) {
+            addblock_data.all_list_product[key].start = start_number;
+            addblock_data.all_list_product[key].end = end_number;
+          }
         }
-      });
+      };
       if (check_false) {
         $("input[name='" + input_main + "[start]']").val("");
         $("input[name='" + input_main + "[end]']").val("");
@@ -580,6 +586,9 @@ function saveBlockProduct() {
         block.saveBlockProductStatus = true;
         if (resp.msg != undefined) {
           jAlert(resp.msg, "Thông báo");
+          setTimeout(() => {
+            location.reload();
+          }, 150);
           return false;
         }
       },
