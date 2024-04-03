@@ -1,0 +1,122 @@
+/*
+* @Author: KEN
+* @Date:   2017-06-12 10:22:29
+* @Last Modified by:   KEN
+* @Last Modified time: 2017-06-19 10:38:06
+*/
+@media screen and (max-width: 320px) {
+	ul.utop2, #page {
+		width: 320px !important;
+	}
+}
+@media screen and (max-width: 480px) {
+	ul.utop2, #page {
+		width: 480px !important;
+	}	
+}
+@media screen and (max-width: 600px) {
+	ul.utop2, #page {
+		width: 600px !important;
+	}
+}
+@media screen and (max-width: 768px) {
+	ul.utop2, #page {
+		width: 768px !important;
+	}
+}
+@media screen and (min-width: 320px) and (max-width: 768px) { 
+/********************* MENU ***********************/ 
+    #pull-menu{
+        display: block;
+	    position: absolute;
+	    right: 10px;
+	    top: 155px;
+	    cursor: pointer;
+	    z-index: 9999;
+	}
+	.sp-menu-mobile {
+        display: block;
+	    height: 3px;
+	    width: 22px;
+	    background: #fff;
+	    margin: 3px auto;
+	}
+	.dmenuH{
+		width: 0px;
+		background: #199908 ;
+		position: absolute;
+	    z-index: 9999;
+	    left: -250px;
+	    -webkit-transition: all 0.5s ease;
+	    -moz-transition: all 0.5s ease;
+	    -o-transition: all 0.5s ease;
+	    transition: all 0.5s ease;
+	}
+	.dmenuH tr td{
+		display: block;
+		z-index: 9999;
+		text-align: left;
+	}
+	.toggled #menu-tbl{
+		left: 0;
+		width: 250px;
+		height: auto;
+	}
+	.toggled .dmenuH td > a {
+	    padding: 12px 0px 11px 15px;
+	}
+	.toggled ul.ultop2 li {
+	    min-width: 250px;
+	}
+/********************* HOME PAGE ***********************/ 
+	.wrap-mobile .uonline, .wrap-mobile .litopl, .wrap-mobile .litopr a, 
+	.wrap-mobile .wap li.i4, .wrap-mobile div.div4, .wrap-mobile #slider .l,
+	#carousel, #page #slide .adv
+	{display: none;}
+	.wrap-mobile .litopr, .wrap-mobile .wap li.i3 {float:left !important;}
+	.wrap-mobile .wap li.i3 {margin-left: 7% !important;}
+	#slider .r {width: 64.6%;}
+	.flexslider:hover .flex-next, .flexslider .flex-next {right: 135px !important;}
+	.img-responsive {max-width: 100% !important; height: auto !important;}
+	div.divhl, .home {width: 63.5% !important;}
+	.divhr {
+		width: 47.3% !important;
+		padding: 5px;
+	}
+	div.divhr div.divhr {width: 100% !important; padding: 0;}
+	.divhr .boxl {
+		width: 100%;
+		margin-top: 5px;
+	}
+	.divhr .boxl ul.lstpro li {
+		margin: 0 auto;
+	}
+	.home {
+		margin-left: 5px !important;
+		margin-right: 5px !important;
+	}
+	.home .boxr {
+		width: 74.4%;
+	}
+	.home .newsdt, .home .prodt  {width: 70.5% !important;}
+	.home .prodt .l, .home .prodt .r {width: 100%;}
+	.home .boxr ul.produces {width: 93.5%;}
+	.home .boxr ul.produces li {
+		text-align: center;
+		width: 100%;
+	}
+	div.div7 {
+		margin-left: 5px;
+		margin-right: 5px;
+		width: 97%;
+	}
+	div.div7 .ulft, div.div7 .alink {width: 97%;padding-left: 5px;padding-right: 5px;}
+	div.div7 .ulft li.l {margin-bottom: 10px; width: 100%;}
+	div.div7 .ulft li.r {width: 100%;}
+	ul.utop2 li.litop2l img {max-width: 100vw;}
+	.fb-like-box {display: block !important; width: 100%;}
+	.fb_iframe_widget_fluid span {width: 100% !important;}
+	.fb_iframe_widget iframe {width: 100% !important;}
+	.fb_iframe_widget iframe ._2p3a {width: 100% !important;}
+/********************* MENU ***********************/ 
+}

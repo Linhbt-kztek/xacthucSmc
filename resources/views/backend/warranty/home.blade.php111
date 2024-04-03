@@ -1,0 +1,200 @@
+@extends('backend.layouts.main')
+@section('title', 'Doanh nghiệp')
+@section('content')
+<link rel="stylesheet" href="{{asset('backend/plugins/datatables/dataTables.bootstrap.css')}}">
+
+<?php
+   // echo $companyID; //Lấy biến từ WarrantyController
+    $servername = "localhost";
+    $username = "xacthucs_backend";
+    $password = "admin123!@#";
+    $dbname = "xacthucs_smartcheck";
+        $conn = new mysqli($servername, $username, $password, $dbname);
+    mysqli_set_charset( $conn, 'utf8');
+    if ($conn->connect_error) 
+    {
+        die("Connection failed: " . $conn->connect_error);
+    } 
+    
+ // Xác định số lượng phần tử trên mỗi trang
+    $results_per_page = 25;
+// Xác định trang hiện tại
+    if (!isset($_GET['page'])) 
+        {
+          $page = 1;
+         // echo $page;
+        } else 
+        {
+          $page = $_GET['page'];
+        }
+// Tính toán offset cho câu truy vấn
+    $offset = ($page-1) * $results_per_page;
+// Lấy tổng số phần tử
+    if ($companyID==1)
+        {
+            $sql = "SELECT COUNT(*) AS total FROM tbl_warranty";
+        }
+        else
+        {
+            $sql = "SELECT COUNT(*) AS total FROM tbl_warranty where idCompany =$companyID";
+        }
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+    $total_results = $row['total'];
+// Lấy dữ liệu cho trang hiện tại
+    if ($companyID==1)
+        {
+            $sql = "SELECT * FROM tbl_warranty  order by id desc LIMIT " . $offset . ", " . $results_per_page;
+        }
+        else
+        {
+           $sql = "SELECT * FROM tbl_warranty where idCompany =$companyID order by id desc LIMIT " . $offset . ", " . $results_per_page;   
+        }
+        
+    $result = $conn->query($sql);
+// Tính toán số trang
+    $total_pages = ceil($total_results / $results_per_page);
+// Rút gọn số trang nếu quá nhiều
+    $max_pages = 25;
+    if ($total_pages > $max_pages) 
+        {
+          $start_page = max(1, $page - floor($max_pages/2));
+          $end_page = min($total_pages, $start_page + $max_pages - 1);
+        } else 
+        {
+          $start_page = 1;
+          $end_page = $total_pages;
+        }
+
+?>
+
+<style>
+    
+    table.dataTable thead > tr > th, table.dataTable thead > tr > th, table.dataTable tbody > tr > td:first-child {
+  text-align: left !important; */
+}
+</style>
+
+<section class="content-header">
+  <h2>
+    Quản lý bảo hành: {{Auth::user()->company->name}}
+    
+    
+  </h2>
+  <ol class="breadcrumb">
+    <li><a href="{{route('backend.site.index')}}"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li class="active">HỆ THỐNG QUẢN LÝ BẢO HÀNH</li>
+  </ol>
+</section>
+<section class="content">
+	<div class="row">
+		<div class="col-sm-12">
+		<!-- Them mói-->
+		
+		
+	<table id="example1" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+  <thead>
+    <tr>
+         
+      <th scope="col">Tên khách hàng</th>
+      <th scope="col">Số điện thoại</th>
+      <th scope="col">Địa chỉ</th>
+      <th scope="col">Tên sản phẩm</th>
+      <th scope="col">Mã sản phẩm</th>
+      <th scope="col">Số serial</th>
+      <th scope="col">Thời gian bảo hành</th>
+      <th scope="col">Ngày kính hoạt</th>
+      <th scope="col">Số ngày bảo hành còn lại</th>
+     
+    </tr>
+  </thead>
+  <tbody>
+        <?php 
+        while ($row = $result->fetch_assoc())
+        {
+        ?>
+    <tr>
+      
+     
+      <td style="text-align: left;"><a href="{{route('backend.warranty.history','')}}/<?php echo $row['id']; ?>" title="Nhật ký bảo hành"><?php echo mb_convert_case($row['NBH_ten'], MB_CASE_UPPER, "UTF-8"); ?> </a></td>
+      <td><?php echo $row['NBH_sdt']; ?></td>
+      <td><?php echo $row['NBH_dc']; ?></td>
+      <td><?php echo $row['SP_ten']; ?></td>
+      <td><?php echo $row['SP_ma']; ?></td>
+      <td><?php echo $row['SP_sr']; ?></td>
+      <td><?php echo $row['BH_th']." "."(tháng)"; ?></td>
+      <td><?php echo $row['BH_time']; ?></td>
+      <td>
+      <?php
+          $today = date("d/m/Y");
+          $date1 = date("Y-m-d"); 
+          $date2 = $row['BH_time'];
+          $first_date = strtotime(date("Y-m-d"));
+          $second_date = strtotime($date2);
+          $datediff = abs($first_date - $second_date);
+          $day = $row['BH_th']*30 - floor($datediff / (60*60*24));
+          if($day <= 0 )
+              {
+                  echo "Đã hết hạn bảo hành.";
+                     $cl = "cl()"; 
+              }
+          else
+              {
+                 echo $row['BH_th']*30 - floor($datediff / (60*60*24))." "."Ngày";
+              
+              }
+        ?>
+        </td>
+     
+    </tr>
+    <?php } ?>
+
+  </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+<ul class="pagination">
+    
+    
+        <?php
+        // Hiển thị nút chuyển trang
+         echo "<li class='page-item'><a class='page-link' href='?page=1'>Trang đầu</a></li>";
+        if ($page > 1) 
+        {
+              echo "  <li class='page-item'> <a class='page-link'  href='?page=" . ($page - 1) . "'>Về trước</a></li>";
+            }
+            for ($i = $start_page; $i <= $end_page; $i++) 
+               {
+                  if ($i == $page) 
+                  {
+                   
+                   echo "<li class='page-item'> <a class='page-link' style='color:red;' >" . $i . "</a></li>";
+                   
+                  } else 
+                  {
+                    echo "<li class='page-item'> <a class='page-link'  href='?page=" . $i . "'>" . $i . "</a></li>";
+                  }
+               }
+            if ($page < $total_pages) 
+                {
+                  echo "<li class='page-item'><a class='page-link' href='?page=" . ($page + 1) . "'>Trang tiếp</a></li>";
+                }
+        
+         echo "<li class='page-item'><a class='page-link' href='?page=".$end_page."'>Trang cuối</a></li>";
+        
+        ?>
+
+
+
+
+ </ul>
+</nav>
+		
+
+		
+		
+		
+		</div>
+	</div>
+</section>
+@stop
